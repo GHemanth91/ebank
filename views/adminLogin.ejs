@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Admin Login</title>
+	<style>
+		body {
+			margin: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: #f7f7f7;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+		}
+		.card {
+			background: #fff;
+			padding: 2rem 3rem;
+			border-radius: 20px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+			width: 100%;
+			max-width: 400px;
+		}
+		h2 {
+			margin-bottom: 1.5rem;
+			color: #d63447;
+			text-align: center;
+		}
+		input[type="text"],
+		input[type="password"] {
+			width: 100%;
+			padding: 0.8rem;
+			margin-bottom: 1.2rem;
+			border: 1px solid #ccc;
+			border-radius: 10px;
+			font-size: 1rem;
+			transition: 0.3s ease;
+		}
+		input:focus {
+			border-color: #d63447;
+			outline: none;
+		}
+		button {
+			width: 100%;
+			padding: 0.9rem;
+			border: none;
+			border-radius: 10px;
+			background: #d63447;
+			color: white;
+			font-weight: bold;
+			font-size: 1rem;
+			cursor: pointer;
+			transition: 0.3s ease;
+		}
+		button:hover {
+			background: #b82838;
+		}
+		.error {
+			color: #d63447;
+			margin-bottom: 1rem;
+			text-align: center;
+			font-size: 0.95rem;
+		}
+	</style>
+</head>
+<body>
+	<div class="card">
+		<h2>Admin Login</h2>
+		<% if (error) { %>
+			<p class="error"><%= error %></p>
+		<% } %>
+		<form action="/admin" method="POST">
+			<input type="text" name="username" placeholder="Username" required />
+			<input type="password" name="password" placeholder="Password" required />
+			<button type="submit">Login</button>
+		</form>
+	</div>
+</body>
+</html>

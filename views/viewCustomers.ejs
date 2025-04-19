@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>View Customers</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 2rem;
+			background-color: #f4f4f4;
+		}
+		h1 {
+			color: #d63447;
+			text-align: center;
+			margin-bottom: 2rem;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			background: white;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+		}
+		th, td {
+			padding: 1rem;
+			text-align: left;
+			border-bottom: 1px solid #eee;
+		}
+		th {
+			background-color: #d63447;
+			color: white;
+		}
+		tr:hover {
+			background-color: #f9f9f9;
+		}
+		a.button {
+			padding: 0.5rem 1rem;
+			background-color: #d63447;
+			color: white;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: bold;
+			transition: 0.3s ease;
+		}
+		a.button:hover {
+			background-color: #b82838;
+		}
+		.actions {
+			display: flex;
+			gap: 0.5rem;
+		}
+	</style>
+</head>
+<body>
+	<h1>Customer List</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Full Name</th>
+				<th>Email</th>
+				<th>Phone</th>
+				<th>Address</th>
+				<th>City</th>
+				<th>State</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% customers.forEach(customer => { %>
+				<tr>
+					<td><%= customer.fullName %></td>
+					<td><%= customer.email %></td>
+					<td><%= customer.phone %></td>
+					<td><%= customer.address %></td>
+					<td><%= customer.city %></td>
+					<td><%= customer.state %></td>
+					<td class="actions">
+						<a href="/admin/edit/<%= customer.id %>" class="button">Edit</a>
+						<a href="/admin/delete/<%= customer.id %>" class="button" style="background:#666;">Delete</a>
+					</td>
+				</tr>
+			<% }) %>
+		</tbody>
+	</table>
+</body>
+</html>

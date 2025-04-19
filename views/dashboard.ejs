@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credexa</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger px-4 py-2">
+    <a class="navbar-brand fw-bold text-white" href="#">Credexa</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-white fw-semibold">Hi, <%= user %></span>
+      <div class="profile-initials rounded-circle bg-white text-danger fw-bold d-flex justify-content-center align-items-center">
+        <%= user.charAt(0).toUpperCase() %>
+      </div>
+      <button class="btn btn-outline-light btn-sm" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-4">
+    <!-- Accounts Section -->
+    <div class="mb-5">
+      <h4>Your Accounts</h4>
+      <div class="row" id="accountsContainer">
+        <!-- Account cards dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <h4>Financial Summary</h4>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card">
+          <div class="card-body">
+            <p class="card-title text-muted">Monthly Spending</p>
+            <h5>$1,245.62</h5>
+            <small class="text-success"><i class="fas fa-arrow-down"></i> 12% from last month</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card">
+          <div class="card-body">
+            <p class="card-title text-muted">Monthly Income</p>
+            <h5>$3,850.00</h5>
+            <small class="text-success"><i class="fas fa-arrow-up"></i> 5% from last month</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card">
+          <div class="card-body">
+            <p class="card-title text-muted">Savings Goal</p>
+            <h5>$10,000.00</h5>
+            <div class="progress mb-2">
+              <div class="progress-bar bg-danger" style="width: 78%"></div>
+            </div>
+            <small class="text-muted">78% complete</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card">
+          <div class="card-body">
+            <p class="card-title text-muted">Credit Score</p>
+            <h5>760</h5>
+            <small class="text-success"><i class="fas fa-arrow-up"></i> Excellent</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Section -->
+    <div class="mt-5">
+      <h4>Recent Transactions</h4>
+      <div class="list-group list-group-flush" id="transactionsList">
+        <div class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>Deposit: Payroll</strong><br />
+            <small class="text-muted">Feb 25, 2025</small>
+          </div>
+          <div class="text-success fw-bold">+$1,850.00</div>
+        </div>
+        <div class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>Walmart</strong><br />
+            <small class="text-muted">Feb 23, 2025</small>
+          </div>
+          <div class="text-danger fw-bold">-$87.45</div>
+        </div>
+        <div class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>Amazon Prime</strong><br />
+            <small class="text-muted">Feb 21, 2025</small>
+          </div>
+          <div class="text-danger fw-bold">-$14.99</div>
+        </div>
+        <div class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>Uber Ride</strong><br />
+            <small class="text-muted">Feb 20, 2025</small>
+          </div>
+          <div class="text-danger fw-bold">-$24.50</div>
+        </div>
+        <div class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>Transfer from Savings</strong><br />
+            <small class="text-muted">Feb 18, 2025</small>
+          </div>
+          <div class="text-success fw-bold">+$500.00</div>
+        </div>
+        <div class="text-center mt-3">
+          <button class="btn btn-outline-danger">View All Transactions</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="position-fixed bottom-0 end-0 p-4">
+    <div class="dropdown">
+      <button class="btn btn-danger rounded-circle shadow-lg" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-plus"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#"><i class="fas fa-exchange-alt me-2"></i> New Transfer</a></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-credit-card me-2"></i> Pay Bill</a></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-mobile-alt me-2"></i> Mobile Deposit</a></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-user-friends me-2"></i> Send to Friend</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dashboard.cjs"></script>
+  <script>
+    async function logout() {
+      try {
+        const response = await fetch("/auth/logout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          window.location.href = "/login";
+        }
+      } catch (error) {
+        window.location.href = "/login";
+      }
+    }
+  </script>
+</body>
+
+</html>

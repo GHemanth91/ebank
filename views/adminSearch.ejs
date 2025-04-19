@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Search Customer</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 2rem;
+			background-color: #fdfdfd;
+		}
+		h1 {
+			text-align: center;
+			color: #d63447;
+		}
+		form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-bottom: 2rem;
+		}
+		input[type="text"] {
+			padding: 0.7rem;
+			width: 300px;
+			border: 1px solid #ccc;
+			border-radius: 8px;
+			margin-bottom: 1rem;
+			font-size: 1rem;
+		}
+		button {
+			padding: 0.8rem 2rem;
+			background-color: #d63447;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1rem;
+			transition: background 0.3s ease;
+		}
+		button:hover {
+			background-color: #b82838;
+		}
+		table {
+			width: 80%;
+			margin: 0 auto;
+			border-collapse: collapse;
+			background-color: white;
+			box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+			border-radius: 10px;
+			overflow: hidden;
+		}
+		th, td {
+			padding: 1rem;
+			border-bottom: 1px solid #eee;
+			text-align: left;
+		}
+		th {
+			background-color: #f4f4f4;
+			color: #d63447;
+		}
+		tr:last-child td {
+			border-bottom: none;
+		}
+	</style>
+</head>
+<body>
+	<h1>Search Customer by ID</h1>
+	<form action="/admin/search" method="POST">
+		<input type="text" name="customerId" placeholder="Enter Customer ID" required />
+		<button type="submit">Search</button>
+	</form>
+
+	<% if (customer) { %>
+		<table>
+			<tr><th>ID</th><td><%= customer.id %></td></tr>
+			<tr><th>Full Name</th><td><%= customer.fullName %></td></tr>
+			<tr><th>Email</th><td><%= customer.email %></td></tr>
+			<tr><th>Phone</th><td><%= customer.phone %></td></tr>
+			<tr><th>Address</th><td><%= customer.address %></td></tr>
+			<tr><th>City</th><td><%= customer.city %></td></tr>
+			<tr><th>State</th><td><%= customer.state %></td></tr>
+		</table>
+	<% } else if (searched) { %>
+		<p style="text-align:center; color: #999;">No customer found with that ID.</p>
+	<% } %>
+</body>
+</html>

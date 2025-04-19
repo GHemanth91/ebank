@@ -1,0 +1,213 @@
+/* dashboard.css */
+
+/* Root Theme */
+:root {
+  --primary: #e63946;
+  --bg-light: #f1f5f9;
+  --text-dark: #1f2937;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border-radius: 1.5rem;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --transition: all 0.3s ease;
+  --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* General Reset */
+body {
+  font-family: var(--font);
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+/* Navbar */
+nav.navbar {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  padding: 0.75rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.navbar .nav-link {
+  color: var(--text-dark);
+  font-weight: 500;
+  margin-left: 1rem;
+  transition: var(--transition);
+}
+
+.navbar .nav-link:hover {
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+  padding: 2rem 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  animation: fadeIn 0.6s ease;
+}
+
+/* Greeting */
+.user-greeting {
+  grid-column: 1 / -1;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Profile */
+#profileInitials {
+  background-color: var(--primary);
+  color: #fff;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Card Styles */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  border: none;
+  transition: var(--transition);
+  transform: scale(0.97);
+  animation: popUp 0.4s ease forwards;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* Account Cards Section */
+#accountsContainer .card {
+  animation-delay: 0.1s;
+}
+
+/* Stats Section */
+.stats-card {
+  animation-delay: 0.2s;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Transactions */
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.transaction-item {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  animation: popUp 0.4s ease forwards;
+}
+
+.transaction-item:hover {
+  transform: scale(1.01);
+}
+
+.transaction-item.deposit .transaction-amount {
+  color: #10b981;
+}
+
+.transaction-item.withdrawal .transaction-amount {
+  color: #ef4444;
+}
+
+/* Quick Action Floating Button */
+.quick-actions {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.quick-action-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  box-shadow: 0 10px 25px rgba(230, 57, 70, 0.5);
+  transition: var(--transition);
+}
+
+.quick-action-btn:hover {
+  background-color: #d62828;
+  transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popUp {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  nav.navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .navbar .nav-link {
+    margin: 0.5rem 0;
+  }
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  background-color: var(--card-bg);
+  backdrop-filter: blur(10px);
+}
