@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - Credexa</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger px-4 py-2">
+    <a class="navbar-brand fw-bold text-white" href="/dashboard">Credexa</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-white fw-semibold">Hi, <%= user.username %></span>
+      <div class="profile-initials rounded-circle bg-white text-danger fw-bold d-flex justify-content-center align-items-center">
+        <%= user.username.charAt(0).toUpperCase() %>
+      </div>
+      <button class="btn btn-outline-light btn-sm" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Navigation</h5>
+            <div class="list-group list-group-flush">
+              <a href="/dashboard" class="list-group-item list-group-item-action">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+              </a>
+              <a href="/transfer" class="list-group-item list-group-item-action">
+                <i class="fas fa-exchange-alt me-2"></i> Transfer
+              </a>
+              <a href="/budget" class="list-group-item list-group-item-action">
+                <i class="fas fa-chart-pie me-2"></i> Budget
+              </a>
+              <a href="/savings" class="list-group-item list-group-item-action">
+                <i class="fas fa-piggy-bank me-2"></i> Savings Goals
+              </a>
+              <a href="/profile" class="list-group-item list-group-item-action active">
+                <i class="fas fa-user me-2"></i> Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Content -->
+      <div class="col-md-9">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">Profile Information</h4>
+            <form id="profileForm">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="fullName" class="form-label">Full Name</label>
+                  <input type="text" class="form-control" id="fullName" value="<%= user.fullName || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" value="<%= user.email %>" readonly>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="phone" class="form-label">Phone Number</label>
+                  <input type="tel" class="form-control" id="phone" value="<%= user.phone || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" value="<%= user.username %>" readonly>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label for="address" class="form-label">Address</label>
+                  <input type="text" class="form-control" id="address" value="<%= user.address || '' %>">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="city" class="form-label">City</label>
+                  <input type="text" class="form-control" id="city" value="<%= user.city || '' %>">
+                </div>
+                <div class="col-md-4">
+                  <label for="state" class="form-label">State</label>
+                  <input type="text" class="form-control" id="state" value="<%= user.state || '' %>">
+                </div>
+                <div class="col-md-4">
+                  <label for="zipCode" class="form-label">Zip Code</label>
+                  <input type="text" class="form-control" id="zipCode" value="<%= user.zipCode || '' %>">
+                </div>
+              </div>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">Security Settings</h4>
+            <form id="passwordForm">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="currentPassword" class="form-label">Current Password</label>
+                  <input type="password" class="form-control" id="currentPassword">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="newPassword" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="newPassword">
+                </div>
+                <div class="col-md-6">
+                  <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                  <input type="password" class="form-control" id="confirmPassword">
+                </div>
+              </div>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary">Change Password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-title mb-4">Login Activity</h4>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>IP Address</th>
+                    <th>Device</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><%= new Date().toLocaleString() %></td>
+                    <td>127.0.0.1</td>
+                    <td>Chrome on Windows</td>
+                    <td><span class="badge bg-success">Success</span></td>
+                  </tr>
+                  <!-- More login activity rows would be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Profile form submission
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const profileData = {
+        fullName: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        state: document.getElementById('state').value,
+        zipCode: document.getElementById('zipCode').value
+      };
+      
+      try {
+        const response = await fetch('/api/users/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify(profileData)
+        });
+        
+        if (response.ok) {
+          alert('Profile updated successfully');
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('An error occurred while updating your profile');
+      }
+    });
+    
+    // Password form submission
+    document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/users/change-password', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
+        });
+        
+        if (response.ok) {
+          alert('Password changed successfully');
+          document.getElementById('passwordForm').reset();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to change password');
+        }
+      } catch (error) {
+        console.error('Error changing password:', error);
+        alert('An error occurred while changing your password');
+      }
+    });
+    
+    // Logout function
+    async function logout() {
+      try {
+        const response = await fetch("/auth/logout", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+        });
+        
+        if (response.ok) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = "/login";
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = "/login";
+      }
+    }
+  </script>
+</body>
+
+</html>

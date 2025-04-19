@@ -8,6 +8,46 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .transfer-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: var(--border-radius);
+            height: 100%;
+        }
+
+        .transfer-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .transfer-form {
+            display: none;
+        }
+
+        .transfer-history-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .transfer-history-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-alert, .error-alert {
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .tab-content {
+            padding-top: 1.5rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -15,52 +55,206 @@
     <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold text-danger" href="/dashboard">Credexa</a>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/transfer"><i class="fas fa-exchange-alt"></i> Transfers</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-danger" href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </li>
-            </ul>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/transfer"><i class="fas fa-exchange-alt"></i> Transfers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bills"><i class="fas fa-file-invoice-dollar"></i> Bills</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/savings"><i class="fas fa-piggy-bank"></i> Savings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budget"><i class="fas fa-chart-pie"></i> Budget</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <div class="d-flex align-items-center" role="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div id="profileInitials" class="me-2"></div>
+                            <span id="profileName" class="me-2"></span>
+                            <i class="fas fa-chevron-down small"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container-fluid mt-5 pt-4">
-        <div class="row g-4">
+    <main class="container mt-5 pt-5">
+        <h2 class="mb-4">Transfer Money</h2>
 
+        <!-- Alerts -->
+        <div class="alert alert-success success-alert" id="successAlert" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <span id="successMessage"></span>
+        </div>
+
+        <div class="alert alert-danger error-alert" id="errorAlert" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Transfer Options -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card transfer-option" onclick="showTransferForm('between')">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-danger-light mb-3">
+                            <i class="fas fa-exchange-alt text-danger"></i>
+                        </div>
+                        <h5>Between My Accounts</h5>
+                        <p class="text-muted small">Transfer money between your accounts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card transfer-option" onclick="showTransferForm('someone')">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-danger-light mb-3">
+                            <i class="fas fa-user-friends text-danger"></i>
+                        </div>
+                        <h5>To Someone Else</h5>
+                        <p class="text-muted small">Send money to another person</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card transfer-option" onclick="showTransferForm('account-id')">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-danger-light mb-3">
+                            <i class="fas fa-hashtag text-danger"></i>
+                        </div>
+                        <h5>By Account ID</h5>
+                        <p class="text-muted small">Transfer using account ID</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transfer Forms -->
+        <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card rounded-4 shadow pop-card">
+                <!-- Between My Accounts Form -->
+                <div class="card rounded-4 shadow pop-card transfer-form" id="betweenForm">
                     <div class="card-body">
-                        <h4 class="mb-4 text-danger">New Transfer</h4>
-                        <form id="transfer-form">
+                        <h4 class="mb-4 text-danger">Transfer Between My Accounts</h4>
+                        <form id="transfer-between-form">
                             <div class="mb-3">
-                                <label for="fromAccount" class="form-label">From Account</label>
-                                <select class="form-select" id="fromAccount" name="fromAccount" required>
+                                <label for="fromAccountBetween" class="form-label">From Account</label>
+                                <select class="form-select" id="fromAccountBetween" name="fromAccountBetween" required>
                                     <option value="">Select account</option>
                                 </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="toAccount" class="form-label">To Account</label>
-                                <input type="text" class="form-control" id="toAccount" name="toAccount" required>
+                                <label for="toAccountBetween" class="form-label">To Account</label>
+                                <select class="form-select" id="toAccountBetween" name="toAccountBetween" required>
+                                    <option value="">Select account</option>
+                                </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="amount" class="form-label">Amount</label>
+                                <label for="amountBetween" class="form-label">Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="amount" name="amount" min="0.01" step="0.01" required>
+                                    <input type="number" class="form-control" id="amountBetween" name="amountBetween" min="0.01" step="0.01" required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="note" class="form-label">Note (optional)</label>
-                                <input type="text" class="form-control" id="note" name="note" placeholder="What's this transfer for?">
+                                <label for="noteBetween" class="form-label">Note (optional)</label>
+                                <input type="text" class="form-control" id="noteBetween" name="noteBetween" placeholder="What's this transfer for?">
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Transfer Funds</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- To Someone Else Form -->
+                <div class="card rounded-4 shadow pop-card transfer-form" id="someoneForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Transfer to Someone Else</h4>
+                        <form id="transfer-someone-form">
+                            <div class="mb-3">
+                                <label for="fromAccountSomeone" class="form-label">From Account</label>
+                                <select class="form-select" id="fromAccountSomeone" name="fromAccountSomeone" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="recipientName" class="form-label">Recipient Name</label>
+                                <input type="text" class="form-control" id="recipientName" name="recipientName" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="toAccountSomeone" class="form-label">Recipient Account ID</label>
+                                <input type="text" class="form-control" id="toAccountSomeone" name="toAccountSomeone" required>
+                                <div class="form-text">Enter the recipient's account ID</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="amountSomeone" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="amountSomeone" name="amountSomeone" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="noteSomeone" class="form-label">Note (optional)</label>
+                                <input type="text" class="form-control" id="noteSomeone" name="noteSomeone" placeholder="What's this transfer for?">
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Transfer Funds</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- By Account ID Form -->
+                <div class="card rounded-4 shadow pop-card transfer-form" id="accountIdForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Transfer by Account ID</h4>
+                        <form id="transfer-account-id-form">
+                            <div class="mb-3">
+                                <label for="fromAccountId" class="form-label">From Account</label>
+                                <select class="form-select" id="fromAccountId" name="fromAccountId" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="toAccountId" class="form-label">To Account ID</label>
+                                <input type="text" class="form-control" id="toAccountId" name="toAccountId" required>
+                                <div class="form-text">Enter the full account ID of the recipient</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="amountId" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="amountId" name="amountId" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="noteId" class="form-label">Note (optional)</label>
+                                <input type="text" class="form-control" id="noteId" name="noteId" placeholder="What's this transfer for?">
                             </div>
 
                             <button type="submit" class="btn btn-danger w-100">Transfer Funds</button>
@@ -78,7 +272,21 @@
                             <li>Daily limit: $10,000</li>
                             <li>Notes help track your transfers</li>
                             <li>External transfers: 1–3 business days</li>
+                            <li>Use account ID for direct transfers</li>
+                            <li>Verify recipient details before sending</li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="card rounded-4 shadow pop-card mt-4">
+                    <div class="card-body">
+                        <h5 class="text-danger mb-3">Need Help?</h5>
+                        <p class="text-muted small">If you need assistance with transfers or have questions about your accounts, our customer service team is available 24/7.</p>
+                        <div class="d-grid">
+                            <button class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-headset me-2"></i> Contact Support
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,8 +295,13 @@
                 <div class="card rounded-4 shadow pop-card">
                     <div class="card-body">
                         <h5 class="text-danger mb-3">Recent Transfers</h5>
-                        <div id="transfer-history" class="text-muted text-center">
-                            Loading transfer history...
+                        <div id="transfer-history" class="text-muted">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading transfer history...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -108,6 +321,32 @@
             } catch {
                 window.location.href = "/login";
             }
+        });
+
+        // Show the selected transfer form
+        function showTransferForm(formType) {
+            // Hide all forms
+            document.querySelectorAll('.transfer-form').forEach(form => {
+                form.style.display = 'none';
+            });
+
+            // Show the selected form
+            switch(formType) {
+                case 'between':
+                    document.getElementById('betweenForm').style.display = 'block';
+                    break;
+                case 'someone':
+                    document.getElementById('someoneForm').style.display = 'block';
+                    break;
+                case 'account-id':
+                    document.getElementById('accountIdForm').style.display = 'block';
+                    break;
+            }
+        }
+
+        // Show the first form by default
+        document.addEventListener('DOMContentLoaded', function() {
+            showTransferForm('between');
         });
     </script>
 </body>

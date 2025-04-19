@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credexa - Simple Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #ff5f6d, #ffc371);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e74c3c;
+        }
+        .btn-primary {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        .btn-primary:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">Credexa Login</h2>
+
+        <div id="error-message" class="alert alert-danger d-none mb-3"></div>
+
+        <form id="login-form" method="POST" action="/auth/login-direct">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="remember-me" name="rememberMe">
+                <label class="form-check-label" for="remember-me">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+            <div class="text-center mt-3">
+                <p>Don't have an account? <a href="/register">Register</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Check for error parameter in URL
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorMessage = urlParams.get('error');
+
+            if (errorMessage) {
+                const errorElement = document.getElementById('error-message');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.remove('d-none');
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            // Let the form submit normally - no need to prevent default
+            // e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                e.preventDefault();
+                const errorElement = document.getElementById('error-message');
+                errorElement.textContent = 'Username and password are required';
+                errorElement.classList.remove('d-none');
+                return false;
+            }
+
+            // Form will submit normally to /auth/login-direct
+            return true;
+        });
+    </script>
+</body>
+</html>

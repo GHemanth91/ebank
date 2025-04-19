@@ -211,3 +211,51 @@ nav.navbar {
   background-color: var(--card-bg);
   backdrop-filter: blur(10px);
 }
+
+/* Banking Options */
+.banking-option-card {
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: var(--border-radius);
+  height: 100%;
+}
+
+.banking-option-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.icon-circle i {
+  font-size: 1.5rem;
+}
+
+.bg-danger-light {
+  background-color: rgba(230, 57, 70, 0.1);
+}
+
+/* Modal Styles */
+.modal-content {
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.modal-header {
+  border-top-left-radius: calc(var(--border-radius) - 1px);
+  border-top-right-radius: calc(var(--border-radius) - 1px);
+}
+
+.modal-footer {
+  border-bottom-left-radius: calc(var(--border-radius) - 1px);
+  border-bottom-right-radius: calc(var(--border-radius) - 1px);
+}

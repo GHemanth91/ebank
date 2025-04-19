@@ -103,6 +103,8 @@
                     <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
 
+                <div id="loginError" class="alert alert-danger mt-3 d-none"></div>
+
                 <button type="submit" class="btn btn-primary w-100">Log In</button>
 
                 <div class="text-center mt-4">
@@ -115,33 +117,84 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script lang="javascript">
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up login form handler');
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            console.log(username, password);
+            // Get the login form element
+            const loginForm = document.getElementById('loginForm');
+            console.log('Login form element:', loginForm);
 
-            try {
-                const response = await fetch('/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
+            // Get the error message element
+            const loginError = document.getElementById('loginError');
 
-                const data = await response.json();
+            // Add submit event listener to the login form
+            loginForm.addEventListener('submit', async function(e) {
+                // Prevent the default form submission
+                e.preventDefault();
+                console.log('Login form submitted');
 
-                if (response.ok) {
-                    window.location.href = '/dashboard';
-                } else {
-                    alert(data.error || 'Login failed');
+                // Get form values
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                console.log('Username:', username, 'Password length:', password.length);
+
+                // Hide any previous error messages
+                loginError.classList.add('d-none');
+
+                try {
+                    // Send login request to the server
+                    console.log('Sending login request to /auth/login');
+                    const response = await fetch('/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    console.log('Login response status:', response.status);
+                    const data = await response.json();
+                    console.log('Login response data:', data);
+
+                    if (response.ok) {
+                        console.log('Login successful!');
+
+                        // Store tokens in localStorage if remember me is checked, otherwise in sessionStorage
+                        const storage = rememberMe ? localStorage : sessionStorage;
+
+                        // Save tokens if they exist in the response
+                        if (data.tokens) {
+                            storage.setItem('accessToken', data.tokens.accessToken);
+                            storage.setItem('refreshToken', data.tokens.refreshToken);
+
+                            // Save user data
+                            storage.setItem('user', JSON.stringify(data.user));
+                            console.log('Tokens and user data saved to', rememberMe ? 'localStorage' : 'sessionStorage');
+                        }
+
+                        // Set a cookie for session authentication
+                        document.cookie = `user=${JSON.stringify(data.user)}; path=/`;
+                        console.log('User cookie set');
+
+                        // Redirect to dashboard
+                        console.log('Redirecting to dashboard...');
+                        window.location.href = '/dashboard';
+                    } else {
+                        // Display error message
+                        console.error('Login failed:', data.error);
+                        loginError.textContent = data.error || 'Invalid username or password';
+                        loginError.classList.remove('d-none');
+                    }
+                } catch (error) {
+                    // Handle any errors that occur during the login process
+                    console.error('Login error:', error);
+                    loginError.textContent = 'An error occurred during login';
+                    loginError.classList.remove('d-none');
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('An error occurred during login');
-            }
+            });
         });
     </script>
 </body>

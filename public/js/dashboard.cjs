@@ -26,6 +26,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  // Initialize modals
+  const quickTransferModal = document.getElementById('quickTransferModal');
+  const payBillModal = document.getElementById('payBillModal');
+
+  // Quick Transfer Submit Button
+  const quickTransferSubmit = document.getElementById('quickTransferSubmit');
+  if (quickTransferSubmit) {
+    quickTransferSubmit.addEventListener('click', handleQuickTransfer);
+  }
+
+  // Pay Bill Submit Button
+  const payBillSubmit = document.getElementById('payBillSubmit');
+  if (payBillSubmit) {
+    payBillSubmit.addEventListener('click', handlePayBill);
+  }
+
   try {
     const response = await fetch("/api/dashboard", {
       method: "GET",
@@ -41,6 +57,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const data = await response.json();
+
+    // Populate account dropdowns in modals
+    populateAccountDropdowns(data.accounts);
 
     // Update accounts section dynamically
     const accountsContainer = document.getElementById("accountsContainer");
@@ -134,5 +153,130 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
+  }
+
+  /**
+   * Handle quick transfer form submission
+   */
+  async function handleQuickTransfer() {
+    const fromAccountId = document.getElementById('quickFromAccount').value;
+    const toAccountId = document.getElementById('quickToAccount').value;
+    const amount = parseFloat(document.getElementById('quickAmount').value);
+    const description = document.getElementById('quickNote').value || 'Quick Transfer';
+
+    if (!fromAccountId || !toAccountId || isNaN(amount) || amount <= 0) {
+      alert('Please fill in all required fields with valid values');
+      return;
+    }
+
+    if (fromAccountId === toAccountId) {
+      alert('Cannot transfer to the same account');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fromAccountId,
+          toAccountId,
+          amount,
+          description
+        })
+      });
+
+      if (response.ok) {
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('quickTransferModal'));
+        modal.hide();
+
+        // Show success message
+        alert('Transfer completed successfully!');
+
+        // Refresh the page to show updated balances
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert(`Transfer failed: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error during transfer:', error);
+      alert('An error occurred during the transfer. Please try again.');
+    }
+  }
+
+  /**
+   * Handle pay bill form submission
+   */
+  async function handlePayBill() {
+    const fromAccountId = document.getElementById('billFromAccount').value;
+    const payee = document.getElementById('billPayee').value;
+    const amount = parseFloat(document.getElementById('billAmount').value);
+    const date = document.getElementById('billDate').value;
+
+    if (!fromAccountId || !payee || isNaN(amount) || amount <= 0 || !date) {
+      alert('Please fill in all required fields with valid values');
+      return;
+    }
+
+    try {
+      // In a real application, this would call an API endpoint to process the bill payment
+      // For now, we'll just show a success message
+
+      // Close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('payBillModal'));
+      modal.hide();
+
+      // Show success message
+      alert(`Bill payment of $${amount.toFixed(2)} to ${payee} scheduled for ${date}`);
+
+    } catch (error) {
+      console.error('Error during bill payment:', error);
+      alert('An error occurred during the bill payment. Please try again.');
+    }
+  }
+
+  /**
+   * Open the pay bill modal
+   */
+  window.openPayBillModal = function() {
+    const modal = new bootstrap.Modal(document.getElementById('payBillModal'));
+    modal.show();
+  };
+
+  /**
+   * Populate account dropdowns in modals
+   * @param {Account[]} accounts - List of user accounts
+   */
+  function populateAccountDropdowns(accounts) {
+    // Get all account dropdowns
+    const quickFromAccountSelect = document.getElementById("quickFromAccount");
+    const quickToAccountSelect = document.getElementById("quickToAccount");
+    const billFromAccountSelect = document.getElementById("billFromAccount");
+
+    // Array of all account dropdowns
+    const accountDropdowns = [
+      quickFromAccountSelect,
+      quickToAccountSelect,
+      billFromAccountSelect
+    ].filter(dropdown => dropdown !== null);
+
+    // Populate each dropdown
+    accountDropdowns.forEach(dropdown => {
+      // Clear existing options
+      dropdown.innerHTML = "";
+
+      // Add default empty option
+      dropdown.add(new Option("Select account", ""));
+
+      // Add account options
+      accounts.forEach((account) => {
+        const accountLabel = `${account.type.charAt(0).toUpperCase() + account.type.slice(1)} (****${account.id.slice(-4)}) - $${account.balance}`;
+        dropdown.add(new Option(accountLabel, account.id));
+      });
+    });
   }
 });

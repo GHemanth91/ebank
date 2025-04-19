@@ -1,150 +1,197 @@
 const db = require("../database.js");
+const { v4: uuidv4 } = require('uuid');
 
-// Pure JavaScript equivalent of the above TypeScript enum
+// Account types enum
 const AccountType = {
 	Checking: "checking",
 	Savings: "savings",
-	Both: "both",
+	Investment: "investment"
 };
-
-//const Account =  {
-//  id,
-//  userId,
-//  type,
-//  balance,
-//  createdAt,
-//};
-// Define the above TS Account class in pure JavaScript with JSDoc
 
 const client = db;
 
 const AccountModel = {
-	create: async (
-		accountData,
-	) => {
+	/**
+	 * Create a new account
+	 * @param {Object} accountData - Account data
+	 * @returns {Object} Created account
+	 */
+	create: async (accountData) => {
 		try {
-			let id = 0;
-			const [count] = await client.query(
-				"SELECT COUNT(*) FROM accounts",
-			);
-			if (count.length > 0) id = count[0]["COUNT(*)"] + 1;
+			// Use provided ID or generate a new UUID
+			const accountId = accountData.id || uuidv4();
+			const now = new Date();
 
+			// Prepare account data with defaults
 			const newAccount = {
-				...accountData,
-				id,
-				createdAt: new Date(),
+				id: accountId,
+				userId: accountData.userId,
+				type: accountData.type || AccountType.Checking,
+				balance: accountData.balance || 0.00,
+				createdAt: now
 			};
 
-			// Check if user already exists
-			const [accounts] = await client.query(
-				"SELECT * FROM accounts WHERE id = ?",
-				[newAccount.id],
-			);
-
-			// Check for error from a mysql2 query
-			if (accounts == undefined) {
-				console.log("SQL Query Error");
-				return newAccount;
-			}
-			if (accounts.length > 0) {
-				console.log("Account already exists");
-				return accounts[0];
-			}
-
+			// Insert new account with fields that match the actual database schema
 			await client.query(
-				"INSERT INTO accounts (id, userId, type, balance, createdAt) VALUES (?, ?, ?, ?, ?)",
+				`INSERT INTO accounts (
+					id, userId, type, balance, createdAt
+				) VALUES (?, ?, ?, ?, ?)`,
 				[
 					newAccount.id,
 					newAccount.userId,
 					newAccount.type,
 					newAccount.balance,
-					newAccount.createdAt,
-				],
+					newAccount.createdAt
+				]
 			);
-			console.log("Account created");
+			console.log("Account created:", newAccount.id);
 
 			return newAccount;
 		} catch (error) {
-			console.error("Account Creation error:", error);
-			throw new Error("Server error creating account");
+			console.error("Account creation error:", error);
+			throw error;
 		}
 	},
 
+	/**
+	 * List all accounts
+	 * @returns {Array} List of all accounts
+	 */
 	listAll: async () => {
-		const [accounts] = await client.query("SELECT * FROM accounts");
-
-		if (accounts == undefined) {
-			console.log("SQL Query Error");
-			return [];
+		try {
+			const [accounts] = await client.query("SELECT * FROM accounts");
+			return accounts || [];
+		} catch (error) {
+			console.error("Error listing accounts:", error);
+			throw error;
 		}
-
-		return accounts;
 	},
 
+	/**
+	 * Find account by ID
+	 * @param {String} id - Account ID
+	 * @returns {Object|null} Account object or null if not found
+	 */
 	findById: async (id) => {
-		const [accounts] = await client.query(
-			"SELECT * FROM accounts WHERE id = ?",
-			[id],
-		);
-
-		if (accounts == undefined) {
-			console.log("SQL Query Error");
-			return [];
+		try {
+			const [accounts] = await client.query(
+				"SELECT * FROM accounts WHERE id = ?",
+				[id]
+			);
+			return accounts.length > 0 ? accounts[0] : null;
+		} catch (error) {
+			console.error("Error finding account by ID:", error);
+			throw error;
 		}
-
-		return accounts.length > 0 ? accounts[0] : undefined;
 	},
 
+	/**
+	 * Find account by ID (alternative method)
+	 * @param {String} accountId - Account ID
+	 * @returns {Object|null} Account object or null if not found
+	 */
+	findByAccountId: async (accountId) => {
+		try {
+			const [accounts] = await client.query(
+				"SELECT * FROM accounts WHERE id = ?",
+				[accountId]
+			);
+			return accounts.length > 0 ? accounts[0] : null;
+		} catch (error) {
+			console.error("Error finding account by ID:", error);
+			throw error;
+		}
+	},
+
+	/**
+	 * Find accounts by user ID
+	 * @param {String} userId - User ID
+	 * @returns {Array} List of accounts
+	 */
 	findByUserId: async (userId) => {
-		const [accounts] = await client.query(
-			"SELECT * FROM accounts WHERE userId = ?",
-			[userId],
-		);
-
-		if (accounts == undefined) {
-			console.log("SQL Query Error");
-			return [];
+		try {
+			const [accounts] = await client.query(
+				"SELECT * FROM accounts WHERE userId = ?",
+				[userId]
+			);
+			return accounts || [];
+		} catch (error) {
+			console.error("Error finding accounts by user ID:", error);
+			throw error;
 		}
-
-		return accounts;
 	},
 
-	findTransactions: async (id) => {
-		const [transactions] = await client.query(
-			"SELECT * FROM transactions WHERE fromId = ?",
-			[id],
-		);
+	/**
+	 * Find transactions for an account
+	 * @param {String} accountId - Account ID
+	 * @param {Object} options - Query options (limit, offset, etc.)
+	 * @returns {Array} List of transactions
+	 */
+	findTransactions: async (accountId, options = {}) => {
+		try {
+			const limit = options.limit || 10;
+			const offset = options.offset || 0;
 
-		if (transactions == undefined) {
-			console.log("SQL Query Error");
-			return [];
+			const [transactions] = await client.query(
+				`SELECT * FROM transactions
+				WHERE (fromAccountId = ? OR toAccountId = ?)
+				ORDER BY createdAt DESC LIMIT ? OFFSET ?`,
+				[accountId, accountId, limit, offset]
+			);
+			return transactions || [];
+		} catch (error) {
+			console.error("Error finding transactions:", error);
+			throw error;
 		}
-
-		return transactions;
 	},
 
-	updateBalance: async (
-		id,
-		newBalance,
-	) => {
-		console.log(
-			"UPDATE accounts SET balance = " + newBalance + " WHERE id = " + id,
-		);
-		await client.query(
-			"UPDATE accounts SET balance = ? WHERE id = ?",
-			[newBalance, id],
-		);
+	/**
+	 * Update account balance
+	 * @param {String} id - Account ID
+	 * @param {Number} newBalance - New balance
+	 * @returns {Object} Updated account
+	 */
+	updateBalance: async (id, newBalance) => {
+		try {
+			await client.query(
+				"UPDATE accounts SET balance = ? WHERE id = ?",
+				[newBalance, id]
+			);
+			return await AccountModel.findById(id);
+		} catch (error) {
+			console.error("Error updating balance:", error);
+			throw error;
+		}
+	},
 
-		return AccountModel.findById(id);
+	/**
+	 * Update account status (active/inactive) - Not implemented
+	 * @param {String} id - Account ID
+	 * @param {Boolean} isActive - Active status
+	 * @returns {Object} Updated account
+	 */
+	updateStatus: async (id, isActive) => {
+		try {
+			// This is a placeholder since the isActive column doesn't exist
+			console.log(`Account status update for ${id} to ${isActive} (not implemented)`);
+			return await AccountModel.findById(id);
+		} catch (error) {
+			console.error("Error updating account status:", error);
+			throw error;
+		}
 	},
 };
 
 /**
  * @typedef {Object} Account
- * @property {number} id
- * @property {number} userId
- * @property {string} type
- * @property {number} balance
- * @property {Date} createdAt
+ * @property {string} id - Account ID (UUID)
+ * @property {string} userId - User ID (UUID)
+ * @property {string} accountNumber - Account number
+ * @property {string} type - Account type (checking, savings, investment)
+ * @property {number} balance - Account balance
+ * @property {string} currency - Currency code (USD, EUR, etc.)
+ * @property {boolean} isActive - Whether the account is active
+ * @property {Date} createdAt - Creation date
+ * @property {Date} updatedAt - Last update date
  */
 module.exports = { AccountModel, AccountType };

@@ -39,6 +39,57 @@
       </div>
     </div>
 
+    <!-- Banking Options Section -->
+    <div class="mb-5">
+      <h4>Banking Options</h4>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm border-0 banking-option-card" onclick="window.location.href='/transfer'">
+            <div class="card-body text-center">
+              <div class="icon-circle bg-danger-light mb-3">
+                <i class="fas fa-exchange-alt text-danger"></i>
+              </div>
+              <h5>Transfer Money</h5>
+              <p class="text-muted small">Transfer between accounts or to other people</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm border-0 banking-option-card" onclick="openPayBillModal()">
+            <div class="card-body text-center">
+              <div class="icon-circle bg-danger-light mb-3">
+                <i class="fas fa-file-invoice-dollar text-danger"></i>
+              </div>
+              <h5>Pay Bills</h5>
+              <p class="text-muted small">Pay your bills or set up recurring payments</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm border-0 banking-option-card" onclick="window.location.href='/savings'">
+            <div class="card-body text-center">
+              <div class="icon-circle bg-danger-light mb-3">
+                <i class="fas fa-piggy-bank text-danger"></i>
+              </div>
+              <h5>Savings Goals</h5>
+              <p class="text-muted small">Create and track your savings goals</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm border-0 banking-option-card" onclick="window.location.href='/budget'">
+            <div class="card-body text-center">
+              <div class="icon-circle bg-danger-light mb-3">
+                <i class="fas fa-chart-pie text-danger"></i>
+              </div>
+              <h5>Budget Planner</h5>
+              <p class="text-muted small">Create and manage your monthly budget</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Stats Section -->
     <h4>Financial Summary</h4>
     <div class="row g-4">
@@ -136,11 +187,105 @@
         <i class="fas fa-plus"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="#"><i class="fas fa-exchange-alt me-2"></i> New Transfer</a></li>
-        <li><a class="dropdown-item" href="#"><i class="fas fa-credit-card me-2"></i> Pay Bill</a></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#quickTransferModal"><i class="fas fa-exchange-alt me-2"></i> Quick Transfer</a></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#payBillModal"><i class="fas fa-credit-card me-2"></i> Pay Bill</a></li>
         <li><a class="dropdown-item" href="#"><i class="fas fa-mobile-alt me-2"></i> Mobile Deposit</a></li>
         <li><a class="dropdown-item" href="#"><i class="fas fa-user-friends me-2"></i> Send to Friend</a></li>
       </ul>
+    </div>
+  </div>
+
+  <!-- Quick Transfer Modal -->
+  <div class="modal fade" id="quickTransferModal" tabindex="-1" aria-labelledby="quickTransferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="quickTransferModalLabel">Quick Transfer</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="quickTransferForm">
+            <div class="mb-3">
+              <label for="quickFromAccount" class="form-label">From Account</label>
+              <select class="form-select" id="quickFromAccount" required>
+                <option value="">Select account</option>
+                <!-- Options will be populated dynamically -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="quickToAccount" class="form-label">To Account</label>
+              <select class="form-select" id="quickToAccount" required>
+                <option value="">Select account</option>
+                <!-- Options will be populated dynamically -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="quickAmount" class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="quickAmount" min="0.01" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="quickNote" class="form-label">Note (optional)</label>
+              <input type="text" class="form-control" id="quickNote" placeholder="What's this transfer for?">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="quickTransferSubmit">Transfer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pay Bill Modal -->
+  <div class="modal fade" id="payBillModal" tabindex="-1" aria-labelledby="payBillModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="payBillModalLabel">Pay Bill</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="payBillForm">
+            <div class="mb-3">
+              <label for="billFromAccount" class="form-label">From Account</label>
+              <select class="form-select" id="billFromAccount" required>
+                <option value="">Select account</option>
+                <!-- Options will be populated dynamically -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="billPayee" class="form-label">Payee</label>
+              <select class="form-select" id="billPayee" required>
+                <option value="">Select payee</option>
+                <option value="electricity">Electricity Company</option>
+                <option value="water">Water Utility</option>
+                <option value="internet">Internet Provider</option>
+                <option value="rent">Rent/Mortgage</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="billAmount" class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="billAmount" min="0.01" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="billDate" class="form-label">Payment Date</label>
+              <input type="date" class="form-control" id="billDate" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="payBillSubmit">Pay Bill</button>
+        </div>
+      </div>
     </div>
   </div>
 

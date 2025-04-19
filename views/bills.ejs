@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Credexa - Pay Bills</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .bill-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: var(--border-radius);
+            height: 100%;
+        }
+        
+        .bill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bill-form {
+            display: none;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+        
+        .bill-history-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .bill-history-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .success-alert, .error-alert {
+            display: none;
+            margin-bottom: 1rem;
+        }
+        
+        .utility-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+        
+        .bill-status {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+        }
+        
+        .status-paid {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        
+        .status-due {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-danger" href="/dashboard">Credexa</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/transfer"><i class="fas fa-exchange-alt"></i> Transfers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/bills"><i class="fas fa-file-invoice-dollar"></i> Bills</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/savings"><i class="fas fa-piggy-bank"></i> Savings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budget"><i class="fas fa-chart-pie"></i> Budget</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <div class="d-flex align-items-center" role="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div id="profileInitials" class="me-2"></div>
+                            <span id="profileName" class="me-2"></span>
+                            <i class="fas fa-chevron-down small"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-5 pt-5">
+        <h2 class="mb-4">Pay Bills</h2>
+        
+        <!-- Alerts -->
+        <div class="alert alert-success success-alert" id="successAlert" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <span id="successMessage"></span>
+        </div>
+        
+        <div class="alert alert-danger error-alert" id="errorAlert" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <span id="errorMessage"></span>
+        </div>
+        
+        <!-- Utility Bills Section -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('electricity')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2807/2807571.png" alt="Electricity" class="utility-logo">
+                        <h5>Electricity</h5>
+                        <p class="text-muted small">Pay your electricity bill</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('water')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/850/850785.png" alt="Water" class="utility-logo">
+                        <h5>Water</h5>
+                        <p class="text-muted small">Pay your water utility bill</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('internet')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2526/2526496.png" alt="Internet" class="utility-logo">
+                        <h5>Internet</h5>
+                        <p class="text-muted small">Pay your internet service bill</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('phone')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2586/2586249.png" alt="Phone" class="utility-logo">
+                        <h5>Phone</h5>
+                        <p class="text-muted small">Pay your mobile phone bill</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('gas')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1582/1582693.png" alt="Gas" class="utility-logo">
+                        <h5>Gas</h5>
+                        <p class="text-muted small">Pay your gas utility bill</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('rent')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" alt="Rent" class="utility-logo">
+                        <h5>Rent/Mortgage</h5>
+                        <p class="text-muted small">Pay your housing expenses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('cable')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3069/3069618.png" alt="Cable TV" class="utility-logo">
+                        <h5>Cable TV</h5>
+                        <p class="text-muted small">Pay your cable television bill</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bill-card" onclick="showBillForm('other')">
+                    <div class="card-body text-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077976.png" alt="Other" class="utility-logo">
+                        <h5>Other</h5>
+                        <p class="text-muted small">Pay other bills and services</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bill Payment Forms -->
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <!-- Electricity Bill Form -->
+                <div class="card rounded-4 shadow pop-card bill-form" id="electricityForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Pay Electricity Bill</h4>
+                        <form id="electricity-bill-form">
+                            <div class="mb-3">
+                                <label for="electricityAccount" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="electricityAccount" name="electricityAccount" placeholder="Enter your electricity account number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="electricityProvider" class="form-label">Provider</label>
+                                <select class="form-select" id="electricityProvider" name="electricityProvider" required>
+                                    <option value="">Select provider</option>
+                                    <option value="citypower">City Power & Light</option>
+                                    <option value="nationalenergy">National Energy</option>
+                                    <option value="solarelectric">Solar Electric Co.</option>
+                                    <option value="greenenergy">Green Energy Solutions</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="electricityFromAccount" class="form-label">Pay From</label>
+                                <select class="form-select" id="electricityFromAccount" name="electricityFromAccount" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="electricityAmount" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="electricityAmount" name="electricityAmount" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="electricityDate" class="form-label">Payment Date</label>
+                                <input type="date" class="form-control" id="electricityDate" name="electricityDate" required>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="electricityRecurring" name="electricityRecurring">
+                                <label class="form-check-label" for="electricityRecurring">Set up recurring payment</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Pay Bill</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Water Bill Form -->
+                <div class="card rounded-4 shadow pop-card bill-form" id="waterForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Pay Water Bill</h4>
+                        <form id="water-bill-form">
+                            <div class="mb-3">
+                                <label for="waterAccount" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="waterAccount" name="waterAccount" placeholder="Enter your water account number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="waterProvider" class="form-label">Provider</label>
+                                <select class="form-select" id="waterProvider" name="waterProvider" required>
+                                    <option value="">Select provider</option>
+                                    <option value="citywater">City Water Works</option>
+                                    <option value="clearwater">Clear Water Utility</option>
+                                    <option value="aquaflow">Aqua Flow Services</option>
+                                    <option value="h2outility">H2O Utility Company</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="waterFromAccount" class="form-label">Pay From</label>
+                                <select class="form-select" id="waterFromAccount" name="waterFromAccount" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="waterAmount" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="waterAmount" name="waterAmount" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="waterDate" class="form-label">Payment Date</label>
+                                <input type="date" class="form-control" id="waterDate" name="waterDate" required>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="waterRecurring" name="waterRecurring">
+                                <label class="form-check-label" for="waterRecurring">Set up recurring payment</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Pay Bill</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Internet Bill Form -->
+                <div class="card rounded-4 shadow pop-card bill-form" id="internetForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Pay Internet Bill</h4>
+                        <form id="internet-bill-form">
+                            <div class="mb-3">
+                                <label for="internetAccount" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="internetAccount" name="internetAccount" placeholder="Enter your internet account number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="internetProvider" class="form-label">Provider</label>
+                                <select class="form-select" id="internetProvider" name="internetProvider" required>
+                                    <option value="">Select provider</option>
+                                    <option value="speednet">SpeedNet</option>
+                                    <option value="fiberwave">Fiber Wave</option>
+                                    <option value="connectplus">Connect Plus</option>
+                                    <option value="netstream">NetStream</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="internetFromAccount" class="form-label">Pay From</label>
+                                <select class="form-select" id="internetFromAccount" name="internetFromAccount" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="internetAmount" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="internetAmount" name="internetAmount" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="internetDate" class="form-label">Payment Date</label>
+                                <input type="date" class="form-control" id="internetDate" name="internetDate" required>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="internetRecurring" name="internetRecurring">
+                                <label class="form-check-label" for="internetRecurring">Set up recurring payment</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Pay Bill</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Other forms would be similar, but hidden for brevity -->
+                <!-- Generic "Other" Bill Form -->
+                <div class="card rounded-4 shadow pop-card bill-form" id="otherForm">
+                    <div class="card-body">
+                        <h4 class="mb-4 text-danger">Pay Other Bill</h4>
+                        <form id="other-bill-form">
+                            <div class="mb-3">
+                                <label for="otherBillName" class="form-label">Bill Name</label>
+                                <input type="text" class="form-control" id="otherBillName" name="otherBillName" placeholder="Enter bill name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="otherAccount" class="form-label">Account/Reference Number</label>
+                                <input type="text" class="form-control" id="otherAccount" name="otherAccount" placeholder="Enter account or reference number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="otherFromAccount" class="form-label">Pay From</label>
+                                <select class="form-select" id="otherFromAccount" name="otherFromAccount" required>
+                                    <option value="">Select account</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="otherAmount" class="form-label">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="otherAmount" name="otherAmount" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="otherDate" class="form-label">Payment Date</label>
+                                <input type="date" class="form-control" id="otherDate" name="otherDate" required>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="otherRecurring" name="otherRecurring">
+                                <label class="form-check-label" for="otherRecurring">Set up recurring payment</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">Pay Bill</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card rounded-4 shadow pop-card">
+                    <div class="card-body">
+                        <h5 class="text-danger mb-3">Bill Payment Tips</h5>
+                        <ul class="text-muted small ps-3">
+                            <li>Schedule payments in advance to avoid late fees</li>
+                            <li>Set up recurring payments for regular bills</li>
+                            <li>Keep your account numbers handy</li>
+                            <li>Check confirmation emails after payment</li>
+                            <li>Allow 2-3 business days for processing</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card rounded-4 shadow pop-card mt-4">
+                    <div class="card-body">
+                        <h5 class="text-danger mb-3">Upcoming Bills</h5>
+                        <div id="upcoming-bills">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <strong>Electricity</strong>
+                                    <div class="text-muted small">Due in 5 days</div>
+                                </div>
+                                <span class="bill-status status-due">$78.45</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <strong>Internet</strong>
+                                    <div class="text-muted small">Due in 12 days</div>
+                                </div>
+                                <span class="bill-status status-pending">$59.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Water</strong>
+                                    <div class="text-muted small">Paid on May 2</div>
+                                </div>
+                                <span class="bill-status status-paid">$42.30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card rounded-4 shadow pop-card">
+                    <div class="card-body">
+                        <h5 class="text-danger mb-3">Recent Bill Payments</h5>
+                        <div id="bill-payment-history" class="text-muted">
+                            <div class="bill-history-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Rent/Mortgage</strong>
+                                        <div class="text-muted small">Paid on May 1, 2023</div>
+                                    </div>
+                                    <div class="text-danger fw-bold">$1,200.00</div>
+                                </div>
+                            </div>
+                            <div class="bill-history-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Phone</strong>
+                                        <div class="text-muted small">Paid on April 25, 2023</div>
+                                    </div>
+                                    <div class="text-danger fw-bold">$85.99</div>
+                                </div>
+                            </div>
+                            <div class="bill-history-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Gas</strong>
+                                        <div class="text-muted small">Paid on April 18, 2023</div>
+                                    </div>
+                                    <div class="text-danger fw-bold">$65.75</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS + Custom -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bills.cjs"></script>
+
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', async function () {
+            try {
+                const response = await fetch("/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" } });
+                if (response.ok) window.location.href = "/login";
+            } catch {
+                window.location.href = "/login";
+            }
+        });
+        
+        // Show the selected bill form
+        function showBillForm(billType) {
+            // Hide all forms
+            document.querySelectorAll('.bill-form').forEach(form => {
+                form.style.display = 'none';
+            });
+            
+            // Show the selected form
+            const formId = billType + 'Form';
+            const form = document.getElementById(formId);
+            if (form) {
+                form.style.display = 'block';
+                
+                // Set default date to today
+                const dateInput = document.getElementById(billType + 'Date');
+                if (dateInput) {
+                    const today = new Date();
+                    const formattedDate = today.toISOString().split('T')[0];
+                    dateInput.value = formattedDate;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

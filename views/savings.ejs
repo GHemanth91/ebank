@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Savings Goals - Credexa</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger px-4 py-2">
+    <a class="navbar-brand fw-bold text-white" href="/dashboard">Credexa</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-white fw-semibold">Hi, <%= user %></span>
+      <div class="profile-initials rounded-circle bg-white text-danger fw-bold d-flex justify-content-center align-items-center">
+        <%= user.charAt(0).toUpperCase() %>
+      </div>
+      <button class="btn btn-outline-light btn-sm" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Navigation</h5>
+            <div class="list-group list-group-flush">
+              <a href="/dashboard" class="list-group-item list-group-item-action">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+              </a>
+              <a href="/transfer" class="list-group-item list-group-item-action">
+                <i class="fas fa-exchange-alt me-2"></i> Transfer
+              </a>
+              <a href="/budget" class="list-group-item list-group-item-action">
+                <i class="fas fa-chart-pie me-2"></i> Budget
+              </a>
+              <a href="/savings" class="list-group-item list-group-item-action active">
+                <i class="fas fa-piggy-bank me-2"></i> Savings Goals
+              </a>
+              <a href="/profile" class="list-group-item list-group-item-action">
+                <i class="fas fa-user me-2"></i> Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Savings Goals Content -->
+      <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Savings Goals</h3>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGoalModal">
+            <i class="fas fa-plus me-2"></i> New Goal
+          </button>
+        </div>
+
+        <!-- Savings Overview -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">Savings Overview</h4>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted">Total Goals</h6>
+                    <h2>3</h2>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted">Total Saved</h6>
+                    <h2>$5,750.00</h2>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted">Target Amount</h6>
+                    <h2>$15,000.00</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Savings Goals -->
+        <div class="row" id="savingsGoalsContainer">
+          <!-- Vacation Goal -->
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 class="card-title">Vacation</h5>
+                    <p class="text-muted mb-0">Target: December 15, 2025</p>
+                  </div>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#contributeModal"><i class="fas fa-plus-circle me-2"></i> Add Funds</a></li>
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal"><i class="fas fa-edit me-2"></i> Edit</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                  <div class="progress-bar bg-success" style="width: 40%"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>$2,000.00 saved</span>
+                  <span>$5,000.00 goal</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                  <small>40% complete</small>
+                  <small>$3,000.00 to go</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Car Goal -->
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 class="card-title">New Car</h5>
+                    <p class="text-muted mb-0">Target: June 30, 2026</p>
+                  </div>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#contributeModal"><i class="fas fa-plus-circle me-2"></i> Add Funds</a></li>
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal"><i class="fas fa-edit me-2"></i> Edit</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                  <div class="progress-bar bg-success" style="width: 25%"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>$2,500.00 saved</span>
+                  <span>$10,000.00 goal</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                  <small>25% complete</small>
+                  <small>$7,500.00 to go</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Fund Goal -->
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 class="card-title">Emergency Fund</h5>
+                    <p class="text-muted mb-0">No target date</p>
+                  </div>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#contributeModal"><i class="fas fa-plus-circle me-2"></i> Add Funds</a></li>
+                      <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal"><i class="fas fa-edit me-2"></i> Edit</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                  <div class="progress-bar bg-success" style="width: 62.5%"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>$1,250.00 saved</span>
+                  <span>$2,000.00 goal</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                  <small>62.5% complete</small>
+                  <small>$750.00 to go</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contribution History -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-title mb-4">Contribution History</h4>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Goal</th>
+                    <th>Amount</th>
+                    <th>Source</th>
+                  </tr>
+                </thead>
+                <tbody id="contributionHistoryTable">
+                  <tr>
+                    <td>May 15, 2025</td>
+                    <td>Vacation</td>
+                    <td class="text-success">+$200.00</td>
+                    <td>Checking Account</td>
+                  </tr>
+                  <tr>
+                    <td>May 10, 2025</td>
+                    <td>Emergency Fund</td>
+                    <td class="text-success">+$150.00</td>
+                    <td>Checking Account</td>
+                  </tr>
+                  <tr>
+                    <td>May 1, 2025</td>
+                    <td>New Car</td>
+                    <td class="text-success">+$500.00</td>
+                    <td>Checking Account</td>
+                  </tr>
+                  <tr>
+                    <td>April 15, 2025</td>
+                    <td>Vacation</td>
+                    <td class="text-success">+$200.00</td>
+                    <td>Checking Account</td>
+                  </tr>
+                  <tr>
+                    <td>April 1, 2025</td>
+                    <td>New Car</td>
+                    <td class="text-success">+$500.00</td>
+                    <td>Checking Account</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Goal Modal -->
+  <div class="modal fade" id="newGoalModal" tabindex="-1" aria-labelledby="newGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newGoalModalLabel">Create New Savings Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="newGoalForm">
+            <div class="mb-3">
+              <label for="goalName" class="form-label">Goal Name</label>
+              <input type="text" class="form-control" id="goalName" required>
+            </div>
+            <div class="mb-3">
+              <label for="goalAmount" class="form-label">Target Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="goalAmount" min="0" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="goalAccount" class="form-label">Linked Account</label>
+              <select class="form-select" id="goalAccount" required>
+                <option value="" selected disabled>Select an account</option>
+                <option value="1">Checking Account (•••1234)</option>
+                <option value="2">Savings Account (•••5678)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="goalCategory" class="form-label">Category</label>
+              <select class="form-select" id="goalCategory">
+                <option value="" selected disabled>Select a category</option>
+                <option value="vacation">Vacation</option>
+                <option value="car">Car</option>
+                <option value="home">Home</option>
+                <option value="education">Education</option>
+                <option value="emergency">Emergency Fund</option>
+                <option value="retirement">Retirement</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="goalTargetDate" class="form-label">Target Date (Optional)</label>
+              <input type="date" class="form-control" id="goalTargetDate">
+            </div>
+            <div class="mb-3">
+              <label for="goalDescription" class="form-label">Description (Optional)</label>
+              <textarea class="form-control" id="goalDescription" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="createGoal()">Create Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Goal Modal -->
+  <div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editGoalModalLabel">Edit Savings Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editGoalForm">
+            <input type="hidden" id="editGoalId">
+            <div class="mb-3">
+              <label for="editGoalName" class="form-label">Goal Name</label>
+              <input type="text" class="form-control" id="editGoalName" required>
+            </div>
+            <div class="mb-3">
+              <label for="editGoalAmount" class="form-label">Target Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="editGoalAmount" min="0" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editGoalCategory" class="form-label">Category</label>
+              <select class="form-select" id="editGoalCategory">
+                <option value="vacation">Vacation</option>
+                <option value="car">Car</option>
+                <option value="home">Home</option>
+                <option value="education">Education</option>
+                <option value="emergency">Emergency Fund</option>
+                <option value="retirement">Retirement</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editGoalTargetDate" class="form-label">Target Date (Optional)</label>
+              <input type="date" class="form-control" id="editGoalTargetDate">
+            </div>
+            <div class="mb-3">
+              <label for="editGoalDescription" class="form-label">Description (Optional)</label>
+              <textarea class="form-control" id="editGoalDescription" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="updateGoal()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contribute Modal -->
+  <div class="modal fade" id="contributeModal" tabindex="-1" aria-labelledby="contributeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="contributeModalLabel">Add Funds to Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="contributeForm">
+            <input type="hidden" id="contributeGoalId">
+            <div class="mb-3">
+              <label for="contributeAmount" class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="contributeAmount" min="0.01" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="contributeSource" class="form-label">Source Account</label>
+              <select class="form-select" id="contributeSource" required>
+                <option value="1">Checking Account (•••1234)</option>
+                <option value="2">Savings Account (•••5678)</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="addContribution()">Add Funds</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Create new savings goal
+    async function createGoal() {
+      const name = document.getElementById('goalName').value;
+      const amount = document.getElementById('goalAmount').value;
+      const accountId = document.getElementById('goalAccount').value;
+      const category = document.getElementById('goalCategory').value;
+      const targetDate = document.getElementById('goalTargetDate').value;
+      const description = document.getElementById('goalDescription').value;
+      
+      if (!name || !amount || !accountId) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/savings-goals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            name,
+            targetAmount: parseFloat(amount),
+            accountId,
+            category,
+            targetDate: targetDate || null,
+            description
+          })
+        });
+        
+        if (response.ok) {
+          alert('Savings goal created successfully');
+          document.getElementById('newGoalForm').reset();
+          const modal = bootstrap.Modal.getInstance(document.getElementById('newGoalModal'));
+          modal.hide();
+          // Reload goals
+          loadGoals();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to create savings goal');
+        }
+      } catch (error) {
+        console.error('Error creating savings goal:', error);
+        alert('An error occurred while creating the savings goal');
+      }
+    }
+    
+    // Update savings goal
+    async function updateGoal() {
+      const goalId = document.getElementById('editGoalId').value;
+      const name = document.getElementById('editGoalName').value;
+      const amount = document.getElementById('editGoalAmount').value;
+      const category = document.getElementById('editGoalCategory').value;
+      const targetDate = document.getElementById('editGoalTargetDate').value;
+      const description = document.getElementById('editGoalDescription').value;
+      
+      try {
+        const response = await fetch(`/api/savings-goals/${goalId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            name,
+            targetAmount: parseFloat(amount),
+            category,
+            targetDate: targetDate || null,
+            description
+          })
+        });
+        
+        if (response.ok) {
+          alert('Savings goal updated successfully');
+          const modal = bootstrap.Modal.getInstance(document.getElementById('editGoalModal'));
+          modal.hide();
+          // Reload goals
+          loadGoals();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to update savings goal');
+        }
+      } catch (error) {
+        console.error('Error updating savings goal:', error);
+        alert('An error occurred while updating the savings goal');
+      }
+    }
+    
+    // Add contribution to goal
+    async function addContribution() {
+      const goalId = document.getElementById('contributeGoalId').value;
+      const amount = document.getElementById('contributeAmount').value;
+      const sourceAccountId = document.getElementById('contributeSource').value;
+      
+      try {
+        const response = await fetch(`/api/savings-goals/${goalId}/contribute`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            sourceAccountId
+          })
+        });
+        
+        if (response.ok) {
+          alert('Contribution added successfully');
+          document.getElementById('contributeForm').reset();
+          const modal = bootstrap.Modal.getInstance(document.getElementById('contributeModal'));
+          modal.hide();
+          // Reload goals and contribution history
+          loadGoals();
+          loadContributions();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to add contribution');
+        }
+      } catch (error) {
+        console.error('Error adding contribution:', error);
+        alert('An error occurred while adding the contribution');
+      }
+    }
+    
+    // Load savings goals (placeholder function)
+    function loadGoals() {
+      // This would be implemented to fetch goals from the API
+      console.log('Loading savings goals...');
+    }
+    
+    // Load contribution history (placeholder function)
+    function loadContributions() {
+      // This would be implemented to fetch contribution history from the API
+      console.log('Loading contribution history...');
+    }
+    
+    // Logout function
+    async function logout() {
+      try {
+        const response = await fetch("/auth/logout", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+        });
+        
+        if (response.ok) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = "/login";
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = "/login";
+      }
+    }
+  </script>
+</body>
+
+</html>
